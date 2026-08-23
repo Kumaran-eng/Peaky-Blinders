@@ -1,166 +1,160 @@
-# DocTrust AI
+# ABC College Chatbot
 
-## Trusted Document-Grounded Knowledge Assistant
+A trusted, document-grounded chatbot for ABC College. Students can ask questions about the shared college documents, while administrators securely manage the knowledge base.
 
-## Access roles
+The chatbot answers only when the uploaded documents contain sufficient evidence. If evidence is unavailable, it responds:
 
-- **Students:** Open `/chat` and ask questions using the shared document knowledge base. No sign-in is required.
-- **Administrators:** Open `/admin` to upload documents, view analytics, review knowledge gaps, and manage document records. Set a private password in `.env` before using it:
+> I don't know based on the provided documents.
 
-```env
-ADMIN_PASSWORD=use-a-strong-private-password
-```
+## Features
 
-The password stays on the FastAPI server; the browser receives only an HTTP-only admin session cookie.
+- Student chat interface with no sign-in required
+- Password-protected admin dashboard
+- Upload and index PDF, DOCX, and TXT documents
+- PDF page-aware source citations
+- Clickable source chips that open the cited document
+- Strict evidence retrieval before the LLM is called
+- Knowledge-gap tracking for unanswered questions
+- Admin analytics, uploaded-document list, and recent-question history
 
-DocTrust AI is an AI-powered document question-answering system that allows users to ask natural-language questions about a given set of documents.
-
-The system uses Retrieval-Augmented Generation (RAG) to retrieve relevant information from the provided documents and uses a Large Language Model through the Groq API to generate answers.
-
-The most important feature of DocTrust AI is that it does not rely on outside knowledge when answering questions. If the required information cannot be found in the provided documents, the system clearly responds:
-
-> "I don't know based on the provided documents."
-
-This helps reduce hallucinations and makes the chatbot more trustworthy and suitable for knowledge-base applications.
-
----
-
-# 1. Problem Statement
-
-Organizations such as colleges, institutions, and companies maintain large amounts of information in documents such as:
-
-- Handbooks
-- FAQs
-- Rules and regulations
-- Policies
-- Academic documents
-- Student guidelines
-- Knowledge-base documents
-
-Users often find it difficult to search through these documents manually.
-
-Traditional chatbots may also generate incorrect information because they use general AI knowledge instead of the organization's actual documents.
-
-Therefore, there is a need for a system that:
-
-1. Accepts organization-provided documents.
-2. Understands the content of those documents.
-3. Allows users to ask questions naturally.
-4. Retrieves the most relevant information.
-5. Generates answers only from the provided content.
-6. Clearly says when the answer is not available.
-7. Shows the source used for the answer.
-
----
-
-# 2. Proposed Solution
-
-DocTrust AI provides a document-grounded AI assistant.
-
-The system processes the provided documents, divides them into smaller chunks, converts those chunks into vector embeddings, and stores them in a FAISS vector database.
-
-When the user asks a question:
-
-1. The question is converted into an embedding.
-2. FAISS searches for similar document chunks.
-3. The system checks the relevance of the retrieved information.
-4. Relevant content is provided to the Groq LLM.
-5. The LLM generates an answer using only the provided context.
-6. The source document and page number are returned.
-7. If sufficient information is unavailable, the system responds that it does not know the answer.
-
----
-
-# 3. Key Features
-
-## 3.1 Document Upload
-
-Administrators can upload supported documents such as:
-
-- PDF
-- DOCX
-- TXT
-
-Uploaded documents are automatically processed and indexed.
-
----
-
-## 3.2 Document Processing
-
-The system extracts text from uploaded documents.
-
-For PDF files, PyMuPDF is used.
-
-For DOCX files, python-docx is used.
-
-For TXT files, Python's built-in file handling is used.
-
----
-
-## 3.3 Intelligent Chunking
-
-Large documents are divided into smaller meaningful text chunks.
-
-This improves retrieval accuracy and allows the AI model to focus on the most relevant information.
-
----
-
-## 3.4 Semantic Search
-
-The system uses Sentence Transformers to convert document chunks and user questions into numerical vector representations.
-
-FAISS is then used to find the most relevant chunks.
-
----
-
-## 3.5 RAG-Based Question Answering
-
-DocTrust AI uses Retrieval-Augmented Generation.
-
-The system does not directly ask the LLM to answer from its general knowledge.
-
-Instead:
-
-User Question
-→ Retrieval
-→ Relevant Document Content
-→ LLM
-→ Grounded Answer
-
----
-
-## 3.6 Hallucination Protection
-
-The system is designed to prevent unsupported answers.
-
-The LLM is instructed to:
-
-- Use only the retrieved context.
-- Never guess.
-- Never invent information.
-- Never use outside knowledge.
-- Clearly state when information is unavailable.
-
-If the system cannot find sufficient evidence, it returns:
-
-> "I don't know based on the provided documents."
-
----
-
-## 3.7 Source Citations
-
-Every grounded answer can include source information such as:
-
-- Document name
-- Page number
-- Retrieval score
-
-Example:
+## How it works
 
 ```text
-Answer:
-The library is open from 8 AM to 6 PM on weekdays.
+Document upload
+  -> text extraction
+  -> chunking
+  -> Sentence Transformer embeddings
+  -> FAISS vector search index
 
-Source:
-college_handbook.pdf
-Page: 12
+Student question
+  -> question embedding
+  -> relevant evidence retrieval
+  -> similarity check
+  -> Groq LLM grounded answer
+  -> answer with real document sources
+```
+
+## Tech stack
+
+- Python and FastAPI
+- SQLite and SQLAlchemy
+- PyMuPDF for PDF extraction
+- python-docx for DOCX extraction
+- LangChain `RecursiveCharacterTextSplitter`
+- Sentence Transformers (`all-MiniLM-L6-v2`)
+- FAISS for semantic retrieval
+- Groq for answer generation
+- HTML, CSS, and vanilla JavaScript frontend
+
+## Project structure
+
+```text
+backend/
+  rag/          # extraction, chunking, embeddings, FAISS, prompts
+  routes/       # chat, document, and admin APIs
+  services/     # application business logic
+frontend/       # student chat and password-protected admin UI
+data/uploads/   # local uploaded documents (not committed)
+vector_db/      # local FAISS files (not committed)
+tests/          # backend and RAG tests
+```
+
+## Setup
+
+1. Create and activate a virtual environment:
+
+```powershell
+python -m venv venv
+.\venv\Scripts\Activate.ps1
+```
+
+2. Install dependencies:
+
+```powershell
+pip install -r requirements.txt
+```
+
+3. Create a `.env` file in the project root:
+
+```env
+GROQ_API_KEY=your_groq_api_key
+GROQ_MODEL=openai/gpt-oss-20b
+
+ADMIN_PASSWORD=choose_a_strong_private_password
+
+EMBEDDING_MODEL=all-MiniLM-L6-v2
+TOP_K=5
+SIMILARITY_THRESHOLD=0.35
+
+DATABASE_URL=sqlite:///./doctrust.db
+UPLOAD_DIR=data/uploads
+PROCESSED_DIR=data/processed
+VECTOR_DB_DIR=vector_db
+```
+
+Never commit `.env`: it contains the Groq API key and admin password.
+
+## Run the application
+
+```powershell
+.\venv\Scripts\python.exe -m uvicorn backend.main:app --reload --host 127.0.0.1 --port 8000
+```
+
+Open:
+
+- Student landing page: `http://127.0.0.1:8000/`
+- Student chat: `http://127.0.0.1:8000/chat`
+- Admin dashboard: `http://127.0.0.1:8000/admin`
+- API documentation: `http://127.0.0.1:8000/docs`
+
+## Student and admin access
+
+### Students
+
+Students use `/chat` without a password. They can ask questions using the same shared knowledge base managed by the administrator.
+
+### Administrator
+
+The `/admin` dashboard requires `ADMIN_PASSWORD` from `.env`. The password is verified on the server; the browser receives only an HTTP-only session cookie.
+
+Admin-only actions include:
+
+- Uploading and indexing documents
+- Viewing document records
+- Viewing analytics and recent questions
+- Viewing knowledge gaps
+- Removing document records
+
+## API endpoints
+
+| Method | Endpoint | Purpose |
+| --- | --- | --- |
+| `POST` | `/api/chat/` | Ask a document-grounded question |
+| `POST` | `/api/documents/upload` | Upload and index a PDF, DOCX, or TXT file (admin only) |
+| `GET` | `/api/documents/view/{filename}` | Open a cited indexed document |
+| `POST` | `/api/admin/login` | Start an admin session |
+| `POST` | `/api/admin/logout` | End an admin session |
+| `GET` | `/api/admin/documents` | List documents (admin only) |
+| `GET` | `/api/admin/knowledge-gaps` | List unanswered questions (admin only) |
+| `GET` | `/api/admin/analytics` | View dashboard counts (admin only) |
+
+## Testing
+
+Run the chat API tests:
+
+```powershell
+.\venv\Scripts\python.exe -m pytest tests\test_chat.py -v
+```
+
+Run the RAG tests:
+
+```powershell
+.\venv\Scripts\python.exe -m pytest tests\test_rag.py -v
+```
+
+## Security notes
+
+- Do not put `GROQ_API_KEY` or `ADMIN_PASSWORD` in frontend files.
+- `.env`, SQLite data, uploaded documents, and FAISS files are ignored by Git.
+- For HTTPS deployment, set `ADMIN_COOKIE_SECURE=True` in `.env`.
+- Deleting a document through the dashboard removes its database record. Vector-level deletion is not currently implemented, so rebuild the index when a full removal is required.
