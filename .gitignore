@@ -1,1 +1,10 @@
 .env
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+doctrust.db
+vector_db/
+data/uploads/
+data/processed/
+*.placeholder

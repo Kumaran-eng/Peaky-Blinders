@@ -18,3 +18,5 @@ langchain
 langchain-text-splitters
 
 pydantic
+pytest
+httpx

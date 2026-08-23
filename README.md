@@ -2,6 +2,17 @@
 
 ## Trusted Document-Grounded Knowledge Assistant
 
+## Access roles
+
+- **Students:** Open `/chat` and ask questions using the shared document knowledge base. No sign-in is required.
+- **Administrators:** Open `/admin` to upload documents, view analytics, review knowledge gaps, and manage document records. Set a private password in `.env` before using it:
+
+```env
+ADMIN_PASSWORD=use-a-strong-private-password
+```
+
+The password stays on the FastAPI server; the browser receives only an HTTP-only admin session cookie.
+
 DocTrust AI is an AI-powered document question-answering system that allows users to ask natural-language questions about a given set of documents.
 
 The system uses Retrieval-Augmented Generation (RAG) to retrieve relevant information from the provided documents and uses a Large Language Model through the Groq API to generate answers.

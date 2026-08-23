@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ABC College Chatbot</title><link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="simple-home">
+  <a class="admin-link" href="/admin">Admin</a>
+  <main class="home-content"><h1>ABC COLLEGE CHATBOT</h1></main>
+  <form id="quick-chat-form" class="quick-chat">
+    <label class="sr-only" for="quick-question">Ask a question</label>
+    <input id="quick-question" type="text" maxlength="2000" placeholder="Ask a question..." required>
+    <button class="button primary" type="submit">Send</button>
+  </form>
+  <script>
+    document.querySelector('#quick-chat-form').addEventListener('submit', event => {
+      event.preventDefault();
+      const question = document.querySelector('#quick-question').value.trim();
+      if (!question) return;
+      sessionStorage.setItem('doctrust_pending_question', question);
+      window.location.href = '/chat';
+    });
+  </script>
+</body>
+</html>

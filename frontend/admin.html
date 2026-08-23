@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Admin | DocTrust AI</title><link rel="stylesheet" href="/static/css/style.css"><link rel="stylesheet" href="/static/css/admin.css">
+</head>
+<body class="app-body">
+  <main id="admin-login" class="admin-login" hidden>
+    <a class="brand" href="/">DocTrust <span>AI</span></a>
+    <section class="login-card"><p class="eyebrow">ADMIN ONLY</p><h1>Knowledge base access</h1><p class="muted">Sign in to upload and manage the shared document knowledge base. Students can use the chat without signing in.</p>
+      <form id="login-form"><label for="admin-password">Admin password</label><input id="admin-password" type="password" autocomplete="current-password" required><button class="button primary" type="submit">Sign in</button><p id="login-error" class="form-error" role="alert"></p></form>
+    </section>
+  </main>
+
+  <main id="admin-dashboard" class="dashboard" hidden>
+    <header class="dashboard-header"><a class="brand" href="/">DocTrust <span>AI</span></a><div><a class="text-button" href="/chat">Student chat</a><button id="refresh" class="text-button">Refresh</button><button id="logout" class="text-button">Sign out</button></div></header>
+    <h1>Knowledge base dashboard</h1><p class="muted">Upload documents, monitor questions, and spot the knowledge gaps your students need filled.</p>
+    <section id="metrics" class="metrics" aria-label="Analytics"></section>
+    <section class="panel upload-panel"><h2>Upload document</h2><form id="upload-form"><input id="document-file" type="file" accept=".pdf,.docx,.txt" required><button class="button primary" type="submit">Upload document</button><span id="upload-status" aria-live="polite"></span></form></section>
+    <div class="two-column"><section class="panel"><h2>Documents</h2><div class="table-wrap"><table><thead><tr><th>Document</th><th>Type</th><th>Status</th><th>Uploaded</th><th>Action</th></tr></thead><tbody id="documents"></tbody></table></div></section><section class="panel"><h2>Knowledge gaps</h2><ol id="gaps" class="gaps"></ol></section></div>
+    <section class="panel"><h2>Recent questions</h2><ul id="questions" class="questions"></ul></section><p id="admin-error" class="form-error" role="alert"></p>
+  </main>
+  <script src="/static/js/documents.js"></script><script src="/static/js/admin.js"></script>
+</body>
+</html>

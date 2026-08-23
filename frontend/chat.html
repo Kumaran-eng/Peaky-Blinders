@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Chat | DocTrust AI</title><link rel="stylesheet" href="/static/css/style.css"><link rel="stylesheet" href="/static/css/chat.css">
+</head>
+<body class="app-body">
+  <main class="chat-shell">
+    <header class="chat-header"><a class="brand" href="/">DocTrust <span>AI</span></a><div class="status"><i></i>Grounded answers only</div><button id="clear-chat" class="text-button">Clear chat</button></header>
+    <section id="messages" class="messages" aria-live="polite"><div class="message assistant"><strong>DocTrust AI</strong><p>Ask a question about the documents in this knowledge base. I’ll only answer when the documents support it.</p></div></section>
+    <form id="chat-form" class="composer"><label class="sr-only" for="question">Ask a question</label><textarea id="question" rows="1" maxlength="2000" placeholder="Ask a question about your documents…" required></textarea><button class="button primary" type="submit">Send</button></form>
+    <p id="chat-error" class="form-error" role="alert"></p>
+  </main>
+  <script src="/static/js/chat.js"></script>
+</body>
+</html>
