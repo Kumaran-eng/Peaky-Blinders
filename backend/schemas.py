@@ -1,4 +1,5 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
+from datetime import datetime
 from typing import Optional, List
 
 
@@ -17,6 +18,14 @@ class ChatRequest(BaseModel):
         max_length=2000,
         description="User's question"
     )
+
+    @field_validator("question")
+    @classmethod
+    def question_must_not_be_whitespace(cls, value: str) -> str:
+        value = value.strip()
+        if not value:
+            raise ValueError("Question cannot be empty.")
+        return value
 
 
 class SourceResponse(BaseModel):
@@ -43,6 +52,12 @@ class ChatResponse(BaseModel):
     answered: bool = True
 
 
+class AdminLoginRequest(BaseModel):
+    """Password submitted from the admin sign-in form."""
+
+    password: str = Field(..., min_length=1, max_length=256)
+
+
 # ============================================================
 # DOCUMENT SCHEMAS
 # ============================================================
@@ -60,8 +75,9 @@ class DocumentResponse(BaseModel):
 
     status: str
 
-    class Config:
-        from_attributes = True
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ============================================================
@@ -80,8 +96,9 @@ class KnowledgeGapResponse(BaseModel):
 
     reason: Optional[str] = None
 
-    class Config:
-        from_attributes = True
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ============================================================
